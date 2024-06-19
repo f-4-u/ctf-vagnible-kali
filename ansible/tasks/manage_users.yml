@@ -1,0 +1,32 @@
+- name: Read password from environment file
+  command: /bin/bash -c 'source /tmp/{{ new_user }}.env && echo $USER_PASSWORD'
+  register: env_output
+  changed_when: false
+
+- name: Ensure user exists with the specified password
+  user:
+    name: "{{ new_user }}"
+    shell: /bin/bash
+    create_home: yes
+    password: "{{ env_output.stdout | password_hash('sha512') }}"
+
+- name: Add '{{ new_user }}' to 'vagrant' group
+  user:
+    name: "{{ new_user }}"
+    groups: vagrant
+    append: yes
+
+- name: Ensure /opt/bin/ is in the PATH for user
+  lineinfile:
+    path: /home/{{ new_user }}/.bashrc
+    line: "export PATH=$PATH:/opt/bin/"
+    state: present
+    create: yes
+
+- name: Add user to sudoers
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: "^{{ new_user }} "
+    line: "{{ new_user }} ALL=(ALL) NOPASSWD:ALL"
+    validate: "visudo -cf %s"

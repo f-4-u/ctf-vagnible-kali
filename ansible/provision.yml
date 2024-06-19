@@ -1,0 +1,13 @@
+- name: Configure VM
+  hosts: all
+  become: true
+  vars_files:
+    - ../assets/system.yml
+    - ../assets/censored.env.yml
+
+  tasks:
+    - include_tasks: tasks/configure_hostname.yml
+    - include_tasks: tasks/manage_users.yml
+    - include_tasks: tasks/install_packages.yml
+    - include_tasks: tasks/configure_ssh.yml
+    - include_tasks: tasks/configure_git.yml

@@ -1,0 +1,21 @@
+- name: Set hostname
+  hostname:
+    name: "{{ hostname }}"
+
+- name: Update /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.1\.1\s.*'
+    line: "127.0.1.1 {{ hostname }}.{{ domain }} {{ hostname }}"
+    state: present
+
+- name: Update /etc/hostname
+  lineinfile:
+    path: /etc/hostname
+    line: "{{ hostname }}"
+    state: present
+
+- name: Restart hostname service
+  service:
+    name: systemd-hostnamed
+    state: restarted

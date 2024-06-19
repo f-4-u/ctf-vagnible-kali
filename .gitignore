@@ -1,0 +1,9 @@
+.vagrant/
+
+assets/ssh/*
+!assets/ssh/.gitkeep
+
+.env
+*.env*
+
+.sync*
